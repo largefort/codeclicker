@@ -18,6 +18,8 @@ const PARTICLE_CONFIG = {
 let particles = [];
 let lastFrameTime = 0;
 
+import { snapToPixelGrid } from './pixelPerfect.js';
+
 /**
  * Initialize all visual effects
  */
@@ -110,38 +112,45 @@ function initParticleSystem() {
  * @param {number} timestamp - Current animation frame timestamp
  */
 function updateParticles(timestamp) {
-  if (!lastFrameTime) lastFrameTime = timestamp;
-  const deltaTime = (timestamp - lastFrameTime) / 1000; // convert to seconds
-  lastFrameTime = timestamp;
-  
-  // Update existing particles
-  for (let i = particles.length - 1; i >= 0; i--) {
-    const particle = particles[i];
+    if (!lastFrameTime) lastFrameTime = timestamp;
+    const deltaTime = (timestamp - lastFrameTime) / 1000; // convert to seconds
+    lastFrameTime = timestamp;
     
-    // Update lifetime
-    particle.life -= deltaTime * 1000;
-    if (particle.life <= 0) {
-      // Remove dead particles
-      particle.element.remove();
-      particles.splice(i, 1);
-      continue;
+    // Update existing particles
+    for (let i = particles.length - 1; i >= 0; i--) {
+        const particle = particles[i];
+        
+        // Update lifetime
+        particle.life -= deltaTime * 1000;
+        if (particle.life <= 0) {
+            // Remove dead particles
+            particle.element.remove();
+            particles.splice(i, 1);
+            continue;
+        }
+        
+        // Update position with gravity
+        particle.ySpeed += PARTICLE_CONFIG.gravity * deltaTime;
+        particle.x += particle.xSpeed * deltaTime;
+        particle.y += particle.ySpeed * deltaTime;
+        
+        // Update opacity based on remaining life
+        const opacity = particle.life / particle.maxLife;
+        
+        // Update DOM element with pixel perfect sizes
+        const pixelSize = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--pixel-size'));
+        const size = Math.max(pixelSize, Math.round(particle.size / pixelSize) * pixelSize);
+        
+        particle.element.style.width = `${size}px`;
+        particle.element.style.height = `${size}px`;
+        
+        // Position can be smooth for movement
+        particle.element.style.left = `${particle.x}px`;
+        particle.element.style.top = `${particle.y}px`;
+        particle.element.style.opacity = opacity;
     }
     
-    // Update position with gravity
-    particle.ySpeed += PARTICLE_CONFIG.gravity * deltaTime;
-    particle.x += particle.xSpeed * deltaTime;
-    particle.y += particle.ySpeed * deltaTime;
-    
-    // Update opacity based on remaining life
-    const opacity = particle.life / particle.maxLife;
-    
-    // Update DOM element
-    particle.element.style.left = `${particle.x}px`;
-    particle.element.style.top = `${particle.y}px`;
-    particle.element.style.opacity = opacity;
-  }
-  
-  requestAnimationFrame(updateParticles);
+    requestAnimationFrame(updateParticles);
 }
 
 /**

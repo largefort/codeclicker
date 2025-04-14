@@ -4,6 +4,7 @@ import { createClickText, createPurchaseAnimation } from './clickAnimations.js';
 import { formatNumber } from './numberFormatter.js';
 import { initializeVisualEffects, createScreenFlash, applyScreenShake } from './postEffects.js';
 import { initializeKeyboard, simulateTypingBurst } from './keyboard.js';
+import { initializePixelPerfect } from './pixelPerfect.js';
 
 // Make game state available to other modules
 window.gameState = {
@@ -557,4 +558,5 @@ document.addEventListener('DOMContentLoaded', () => {
     initGame();
     initializeVisualEffects();
     initializeKeyboard();
+    initializePixelPerfect();
 });
