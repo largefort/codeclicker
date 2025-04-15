@@ -1,6 +1,5 @@
 // Animation functions for the 8bit Programming Clicker game
 import { createParticles, createScreenFlash, createShockwave } from './postEffects.js';
-import { snapToPixelGrid } from './pixelPerfect.js';
 
 /**
  * Creates a floating text animation when clicking the computer
@@ -15,16 +14,13 @@ export function createClickText(amount) {
     floatingText.className = 'floating-text';
     floatingText.textContent = `+${amount} lines`;
     
-    // Position randomly around the click area, but aligned to pixel grid
+    // Position randomly around the click area
     const randomX = Math.random() * 60 - 30;
     const randomY = Math.random() * 20 - 40;
     
-    // Set position and add to document with pixel perfect alignment
-    const pixelX = snapToPixelGrid(rect.left + rect.width/2 + randomX);
-    const pixelY = snapToPixelGrid(rect.top + rect.height/2 + randomY);
-    
-    floatingText.style.left = `${pixelX}px`;
-    floatingText.style.top = `${pixelY}px`;
+    // Set position and add to document
+    floatingText.style.left = `${rect.left + rect.width/2 + randomX}px`;
+    floatingText.style.top = `${rect.top + rect.height/2 + randomY}px`;
     document.body.appendChild(floatingText);
     
     // Add particles at click position
